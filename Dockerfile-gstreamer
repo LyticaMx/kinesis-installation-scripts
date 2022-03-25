@@ -1,0 +1,24 @@
+FROM restreamio/gstreamer:latest-prod
+
+# Update and upgrade OS and install dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        cmake \
+        pkg-config \
+        cmake-data \
+        m4 \
+        git \
+        build-essential \
+        # libglib2.0 \
+        libglib2.0-dev
+
+
+# Clone AWS kinesis SDK
+RUN mkdir kinesis && git clone https://github.com/awslabs/amazon-kinesis-video-streams-producer-sdk-cpp.git /kinesis
+
+# Build library with Gstreamer plugin
+RUN cd /kinesis && mkdir build && cd build && cmake .. -DBUILD_GSTREAMER_PLUGIN=ON
+
+# Make library
+run make
+
+WORKDIR /kinesis
